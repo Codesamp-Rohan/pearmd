@@ -6,9 +6,14 @@
     "type": "desktop",
     "gui": {
       "backgroundColor": "#1F2430",
-      "height": "540",
-      "width": "720"
-    }
+      "height": "840",
+      "width": "1120"
+    },
+    "links": [
+      "https://*",
+      "http://*",
+      "localhost"
+    ]
   },
   "type": "module",
   "license": "Apache-2.0",
@@ -21,6 +26,9 @@
     "pear-interface": "^1.0.0"
   },
   "dependencies": {
+    "b4a": "^1.6.7",
+    "hypercore-crypto": "^3.5.0",
+    "hyperswarm": "^4.8.4",
     "marked": "^15.0.7"
   }
 }
