@@ -12,11 +12,23 @@ teardown(() => swarm.destroy());
 updates(() => Pear.reload());
 
 const cursors = {};
+const peerColors = {};
+let userId;
+
+function getPeerColor(peerId) {
+  if (!peerColors[peerId]) {
+    const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 80%, 60%)`;
+    peerColors[peerId] = randomColor;
+  }
+  console.log(peerColors[peerId])
+  return peerColors[peerId];
+}
 
 swarm.on('connection', (peer) => {
   const peerId = b4a.toString(peer.remotePublicKey, 'hex').substr(0, 6);
+  userId = peerId;
   console.log(`New peer connected: ${peerId}`);
-  console.log("New peer connected.");
+  getPeerColor(peerId);
   
   peer.on('data', (message) => {
     const receivedData = JSON.parse(b4a.toString(message));
@@ -47,7 +59,16 @@ swarm.on('update', () => {
 // Function to update line numbers
 function updateLineNumbers() {
   const lines = markdownInput.value.split("\n").length;
-  lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join("<br>");
+  lineNumbers.innerHTML = "";
+
+  for (let i = 1; i <= lines; i++) {
+    const lineDiv = document.createElement("div");
+    lineDiv.className = "line-number";
+    lineDiv.textContent = i;
+    lineDiv.dataset.line = i; // Store line number for tracking
+
+    lineNumbers.appendChild(lineDiv);
+  }
 }
 
 // Synchronize scroll between textarea and line numbers
@@ -160,10 +181,8 @@ updateLineNumbers();
   saveButton.addEventListener('click', saveMarkdown);
   clearButton.addEventListener('click', clearEditor);
 
-  // Initialize preview
   updatePreview();
 
-  // Save markdown to localStorage periodically for auto-recovery
   setInterval(() => {
     localStorage.setItem('savedMarkdown', markdownInput.value);
   }, 5000);
@@ -215,6 +234,7 @@ updateLineNumbers();
     if (!cursorElement) {
       cursorElement = document.createElement("div");
       cursorElement.className = "peer-cursor";
+      cursorElement.style.backgroundColor = getPeerColor(data.name);
       cursorElement.id = `cursor-${data.name}`;
       cursorElement.innerHTML = `<span class="peer-label">${data.name}</span>`;
       document.body.appendChild(cursorElement);
@@ -246,4 +266,44 @@ document.getElementById('join-button').addEventListener('click', () => {
 document.getElementById('detail-button').addEventListener('click', () => {
   document.getElementById('details').classList.toggle('active');
   document.getElementById('overlay').classList.toggle('active');
+});
+
+function displayUserOnLine(line, name) {
+  let nameTag = document.getElementById("user-line-tag");
+
+  if (!nameTag) {
+    nameTag = document.createElement("div");
+    nameTag.id = "user-line-tag";
+    nameTag.className = "user-label";
+    nameTag.style.borderLeft = `2px solid ${getPeerColor(name)}`;
+    nameTag.style.color = getPeerColor(name);
+    document.body.appendChild(nameTag);
+  }
+
+  const lineElement = document.querySelector(`.line-number:nth-child(${line})`);
+  
+  if (lineElement) {
+    const rect = lineElement.getBoundingClientRect();
+    
+    nameTag.textContent = name;
+    nameTag.style.position = "absolute";
+    nameTag.style.right = `52%`;
+    nameTag.style.top = `${rect.top}px`;
+  }
+}
+
+markdownInput.addEventListener("keyup", () => {
+  const cursorPosition = markdownInput.selectionStart;
+  const textUptoCursor = markdownInput.value.substring(0, cursorPosition);
+  const currentLine = textUptoCursor.split("\n").length;
+
+  displayUserOnLine(currentLine, getPeerId());
+});
+
+markdownInput.addEventListener("scroll", () => {
+  const cursorPosition = markdownInput.selectionStart;
+  const textUptoCursor = markdownInput.value.substring(0, cursorPosition);
+  const currentLine = textUptoCursor.split("\n").length;
+
+  displayUserOnLine(currentLine, getPeerId());
 });

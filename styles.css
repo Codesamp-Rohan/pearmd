@@ -173,6 +173,7 @@ main {
 
   .markdown-pane{
     display: flex;
+    position: relative;
   }
 
   #room-sideMenu{
@@ -189,6 +190,7 @@ main {
     transform: translateX(130%);
     opacity: 0;
     transition: 300ms;
+    z-index: 999;
   }
   #details{
     position: absolute;
@@ -204,11 +206,13 @@ main {
     transform: translateX(130%);
     opacity: 0;
     transition: 300ms;
+    z-index: 999;
   }
   .join-create-formArea{
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 30vw;
   }
   .join-create-formArea button{
     background-color: #141414;
@@ -223,6 +227,7 @@ main {
   #join-form{
     display: flex;
     flex-direction: column;
+    width: 30vw;
   }
   input{
     width: 100%;
@@ -272,22 +277,24 @@ main {
     backdrop-filter: blur(9px);
     opacity: 0;
     pointer-events: none;
+    z-index: 998;
   }
 
 .editor-pane, .preview-pane {
     padding: 20px;
     overflow-y: auto;
     height: 100%;
+    position: relative;
 }
 
 .editor-pane {
     width: 100%;
-    box-shadow: inset 0 0 20px #ddd;
     font-family: var(--editor-font);
     font-size: 15px;
     line-height: 1.6;
     color: var(--text-primary);
     background-color: var(--bg-secondary);
+    box-shadow: var(--shadow), 0 0 0 2px rgba(0, 0, 0, 0.1);
     border: none;
     resize: none;
     outline: none;
@@ -301,6 +308,15 @@ main {
 .preview-pane {
     background-color: var(--bg-primary);
 }
+
+.user-label {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 5px;
+    position: absolute;
+    transition: top 0.1s ease-out;
+    background-color: #f1f1f1;
+  }  
 
 /* Markdown Preview Styles */
 .preview-pane h1, .preview-pane h2, .preview-pane h3,

@@ -1,8 +1,9 @@
 {
-  "name": "unaim",
+  "name": "pearmd",
   "main": "index.html",
+  "description": "P2P collaborative markdown editor",
   "pear": {
-    "name": "unaim",
+    "name": "pearmd",
     "type": "desktop",
     "gui": {
       "backgroundColor": "#1F2430",
